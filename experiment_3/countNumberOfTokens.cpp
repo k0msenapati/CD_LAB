@@ -6,7 +6,7 @@ set<string> keywords = {
     "int", "float", "double", "char", "if", "else", "while", "for",
     "return", "void", "break", "continue", "long", "short", "bool"};
 
-set<char> delimiters = {';', ',', '(', ')', '{', '}', '[', ']'};
+set<char> delimiters = {';', ',', '(', ')', '{', '}', '[', ']', '.', ':', '#'};
 
 set<string> operators = {
     "+", "-", "*", "/", "%", "=", "==", "<=", ">=", "!=", "<", ">",
@@ -28,19 +28,21 @@ int main(int argc, char const *argv[])
     for (int i = 0; i < s.size();)
     {
         // skip preprocessor directives
-        if (s[i] == '#') {
-            while (i < s.size() && s[i] != '\n') i++;
+        if (s[i] == '#')
+        {
+            while (i < s.size() && s[i] != '\n')
+                i++;
         }
         // skip whitespaces
         else if (isspace(s[i]))
             i++;
         // skip comments
-        else if (s[i] == '/' && s[i + 1] == '/')
+        else if (s[i] == '/' && i + 1 < s.size() && s[i + 1] == '/')
         {
             while (i < s.size() && s[i] != '\n')
                 i++;
         }
-        else if (s[i] == '/' && s[i + 1] == '*')
+        else if (s[i] == '/' && i + 1 < s.size() && s[i + 1] == '*')
         {
             i += 2;
             while (i < s.size() - 1 && !(s[i] == '*' && s[i + 1] == '/'))
@@ -53,13 +55,14 @@ int main(int argc, char const *argv[])
             char q = s[i++];
             while (i < s.size() && s[i] != q)
                 i++;
-            i++;
+            if (i < s.size())
+                i++;
             lit++;
         }
         // numbers
         else if (isdigit(s[i]))
         {
-            while (i < s.size() && (isdigit(s[i]) || s[i] == '.'))
+            while (i < s.size() && isdigit(s[i]))
                 i++;
             num++;
         }
@@ -100,6 +103,19 @@ int main(int argc, char const *argv[])
     cout << "Literals: " << lit << endl;
     cout << "Operators: " << op << endl;
     cout << "Delimiters: " << del << endl;
+    cout << "Tokens: " << kw + id + num + lit + op + del << endl;
 
     return 0;
 }
+
+/*
+Output:
+
+Keywords: 3
+Identifiers: 7
+Numbers: 3
+Literals: 2
+Operators: 3
+Delimiters: 14
+Tokens: 32
+*/
